@@ -5,15 +5,17 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Formularios extends JFrame {
-    private JTextField usernameField;
-    private JPasswordField passwordField;
-    private JButton registerButton;
-    private JButton loginButton;
+    private JTextField nombreUsuario;
+    private JPasswordField contrasenia;
+    private JButton BotonRegistro;
+    private JButton botonLogin;
 
-    private ArrayList<User> userList;
+    private ArrayList<Usuarios> usuariosList;
+    private JLabel Usuario;
+    private JLabel Contraseña;
 
     public Formularios() {
-        userList = new ArrayList<>();
+        usuariosList = new ArrayList<>();
 
         setTitle("Aplicación de Usuarios");
         setSize(300, 200);
@@ -21,22 +23,22 @@ public class Formularios extends JFrame {
         setLayout(new GridLayout(4, 2, 10, 10));
 
         JLabel usernameLabel = new JLabel("Usuario:");
-        usernameField = new JTextField();
+        nombreUsuario = new JTextField();
         JLabel passwordLabel = new JLabel("Contraseña:");
-        passwordField = new JPasswordField();
-        registerButton = new JButton("Registrar");
-        loginButton = new JButton("Iniciar sesión");
+        contrasenia = new JPasswordField();
+        BotonRegistro = new JButton("Registrar");
+        botonLogin = new JButton("Iniciar sesión");
 
-        registerButton.addActionListener(new ActionListener() {
+        BotonRegistro.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                char[] passwordChars = passwordField.getPassword();
+                String username = nombreUsuario.getText();
+                char[] passwordChars = contrasenia.getPassword();
                 String password = new String(passwordChars);
 
                 if (!username.isEmpty() && !password.isEmpty()) {
-                    User user = new User(username, password);
-                    userList.add(user);
+                    Usuarios usuarios = new Usuarios(username, password);
+                    usuariosList.add(usuarios);
 
                     guardarUsuario();
                     JOptionPane.showMessageDialog(Formularios.this, "Usuario registrado correctamente.");
@@ -46,11 +48,11 @@ public class Formularios extends JFrame {
             }
         });
 
-        loginButton.addActionListener(new ActionListener() {
+        botonLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                char[] passwordChars = passwordField.getPassword();
+                String username = nombreUsuario.getText();
+                char[] passwordChars = contrasenia.getPassword();
                 String password = new String(passwordChars);
 
                 if (!username.isEmpty() && !password.isEmpty()) {
@@ -66,20 +68,20 @@ public class Formularios extends JFrame {
         });
 
         add(usernameLabel);
-        add(usernameField);
+        add(nombreUsuario);
         add(passwordLabel);
-        add(passwordField);
+        add(contrasenia);
         add(new JLabel()); // Empty label for layout purposes
-        add(registerButton);
+        add(BotonRegistro);
         add(new JLabel()); // Empty label for layout purposes
-        add(loginButton);
+        add(botonLogin);
 
         cargarUsuarios();
     }
 
     private void cargarUsuarios() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("usuarios.dat"))) {
-            userList = (ArrayList<User>) ois.readObject();
+            usuariosList = (ArrayList<Usuarios>) ois.readObject();
         } catch (FileNotFoundException e) {
             // Ignore if the file doesn't exist, it will be created when saving users
         } catch (IOException | ClassNotFoundException e) {
@@ -89,15 +91,15 @@ public class Formularios extends JFrame {
 
     private void guardarUsuario() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("usuarios.dat"))) {
-            oos.writeObject(userList);
+            oos.writeObject(usuariosList);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private boolean validarUsuario(String username, String password) {
-        for (User user : userList) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+        for (Usuarios usuarios : usuariosList) {
+            if (usuarios.getUsername().equals(username) && usuarios.getPassword().equals(password)) {
                 return true;
             }
         }
@@ -117,12 +119,12 @@ public class Formularios extends JFrame {
     }
 }
 
-class User implements Serializable {
+class Usuarios implements Serializable {
     private static final long serialVersionUID = 1L;
     private String username;
     private String password;
 
-    public User(String username, String password) {
+    public Usuarios(String username, String password) {
         this.username = username;
         this.password = password;
     }
